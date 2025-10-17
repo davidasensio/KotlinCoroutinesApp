@@ -33,6 +33,32 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        if (project.findProperty("enableComposeCompilerReports") == "true") {
+            freeCompilerArgs.addAll(
+                listOf(
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+                        project.layout.buildDirectory
+                            .get()
+                            .asFile.absolutePath + "/compose_metrics",
+                ),
+            )
+            freeCompilerArgs.addAll(
+                listOf(
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+                        project.layout.buildDirectory
+                            .get()
+                            .asFile.absolutePath + "/compose_metrics",
+                ),
+            )
+        }
     }
 }
 
@@ -46,6 +72,13 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+    // Timber for logging
+    implementation(libs.timber)
+
+    // Compose Lint checks
+    lintChecks(libs.compose.lint.checks)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

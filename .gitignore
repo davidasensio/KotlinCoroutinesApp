@@ -21,3 +21,7 @@ local.properties
 /keystore
 *.jks
 *.keystore
+
+# Compose compiler metrics and reports
+**/compose_metrics/
+**/compose_reports/
