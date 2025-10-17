@@ -1,0 +1,271 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  validation:
+    name: Code Quality & Build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Code Style - ktlint Check
+        run: ./gradlew ktlintCheck
+        continue-on-error: false
+
+      - name: Code Quality - Detekt
+        run: ./gradlew detekt
+        continue-on-error: false
+
+      - name: Lint Check
+        run: ./gradlew lint
+        continue-on-error: false
+
+      - name: Compile Debug Sources
+        run: ./gradlew app:compileDebugSources
+
+      - name: Compile Debug Unit Test Sources
+        run: ./gradlew app:compileDebugUnitTestSources
+
+      - name: Run Unit Tests
+        run: ./gradlew app:testDebugUnitTest
+
+      - name: Build Debug APK
+        if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'apk')
+        run: ./gradlew app:assembleDebug
+
+      - name: Upload APK Artifact
+        if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'apk')
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-${{ github.run_number }}
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_number }}
+          path: |
+            app/build/reports/tests/
+            app/build/test-results/
+          retention-days: 30
+
+      - name: Upload Lint Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-reports-${{ github.run_number }}
+          path: |
+            app/build/reports/lint-*.html
+            app/build/reports/lint-*.xml
+          retention-days: 30
+
+      - name: Upload Detekt Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-reports-${{ github.run_number }}
+          path: |
+            build/reports/detekt/
+          retention-days: 30
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            app/build/test-results/**/*.xml
+
+      - name: Comment PR with Build Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runNumber = context.runNumber;
+            const prNumber = context.issue.number;
+            const runId = context.runId;
+
+            // Check if PR has 'apk' label
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            const hasApkLabel = pullRequest.labels.some(label => label.name === 'apk');
+
+            let apkSection = '';
+            if (hasApkLabel) {
+              apkSection = `
+            **Debug APK is ready for download:**
+            - Artifact name: \`app-debug-${runNumber}\`
+            - Download from the [Actions artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId})
+            `;
+            } else {
+              apkSection = `
+            **Debug APK:**
+            - APK build skipped (add the \`apk\` label to build and upload the APK)
+            `;
+            }
+
+            const comment = `### Build Successful! :rocket:
+            ${apkSection}
+            **Quality Checks:**
+            - :white_check_mark: Code style (ktlint)
+            - :white_check_mark: Code quality (detekt)
+            - :white_check_mark: Lint checks
+            - :white_check_mark: Unit tests
+            - :white_check_mark: Compilation successful
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  instrumented-tests:
+    name: Instrumented Tests (E2E)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: validation
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'end2endTests')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-31
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run Instrumented Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew app:connectedDebugAndroidTest
+
+      - name: Upload Instrumented Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumented-test-results-${{ github.run_number }}
+          path: app/build/reports/androidTests/
+          retention-days: 30
+
+      - name: Upload Instrumented Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumented-test-reports-${{ github.run_number }}
+          path: app/build/outputs/androidTest-results/
+          retention-days: 30
+
+      - name: Comment PR with E2E Test Results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.issue.number;
+            const runId = context.runId;
+            const jobStatus = '${{ job.status }}';
+            const statusEmoji = jobStatus === 'success' ? ':white_check_mark:' : ':x:';
+
+            const comment = `### Instrumented Tests (E2E) ${statusEmoji}
+
+            **Status:** ${jobStatus}
+
+            **Test Reports Available:**
+            - [Download Test Results](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId})
+
+            _Instrumented tests ran because this PR has the \`end2endTests\` label._
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
