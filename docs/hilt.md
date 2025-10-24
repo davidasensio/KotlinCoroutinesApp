@@ -26,7 +26,6 @@ ksp = "2.0.21-1.0.25"  // Must match Kotlin version
 // Dependencies
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 ```
 
 ## Project Structure
@@ -508,9 +507,8 @@ abstract class TestRepositoryModule {
 
 ## Related Documentation
 
-- [Navigation Compose](./navigation-compose.md) - Using hiltViewModel() with Navigation
 - [CLAUDE.md](../CLAUDE.md) - Project architecture and naming conventions
 
 ## Setup Guide
 
-To set up Hilt from scratch, see: [Add Jetpack Navigation 3 and Hilt Prompt](../prompts/03-add-jetpack-navigation-hilt.md)
+To set up Hilt from scratch, see: [Add Hilt Dependency Injection Prompt](../prompts/03-add-hilt.md)

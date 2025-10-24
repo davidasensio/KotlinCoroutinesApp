@@ -1,11 +1,11 @@
-# Prompt: Add Jetpack Navigation 3 and Hilt
+# Prompt: Add Hilt Dependency Injection
 
 ## Objective
-Integrate Navigation Compose 3 for navigation and Hilt for dependency injection into the Android project.
+Integrate Hilt for dependency injection into the Android project.
 
 ## Instructions
 
-Please add Jetpack Navigation 3 and Hilt dependency injection to this Android project with proper configuration and basic setup.
+Please add Hilt dependency injection to this Android project with proper configuration and basic setup.
 
 ### 1. Update Version Catalog
 
@@ -15,27 +15,22 @@ Add to `gradle/libs.versions.toml`:
 ```toml
 [versions]
 hilt = "2.51"  # Latest stable version
-hiltNavigationCompose = "1.2.0"
-navigationCompose = "2.8.0"  # Navigation Compose 3
+ksp = "2.0.21-1.0.25"  # Match Kotlin version
 ```
 
 **Libraries section:**
 ```toml
 [libraries]
-# Navigation
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
-
 # Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 ```
 
 **Plugins section:**
 ```toml
 [plugins]
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.25" }  # Match Kotlin version
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ```
 
 ### 2. Configure Root build.gradle.kts
@@ -65,13 +60,9 @@ plugins {
 dependencies {
     // ... existing dependencies
 
-    // Navigation Compose
-    implementation(libs.androidx.navigation.compose)
-
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
-    implementation(libs.hilt.navigation.compose)
 }
 ```
 
@@ -115,8 +106,6 @@ class CoroutinesApp : Application() {
 Modify `MainActivity.kt`:
 ```kotlin
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -126,77 +115,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppTheme {
-                AppNavigation()
+                // Your content
             }
         }
     }
 }
 ```
 
-### 6. Create Navigation Setup
-
-**Create navigation package structure:**
-```
-app/src/main/java/com/handysparksoft/kotlincoroutines/
-└── navigation/
-    ├── AppNavigation.kt
-    ├── NavigationRoutes.kt
-    └── NavigationExtensions.kt (optional)
-```
-
-**NavigationRoutes.kt:**
-```kotlin
-package com.handysparksoft.kotlincoroutines.navigation
-
-sealed class NavigationRoutes(val route: String) {
-    data object Home : NavigationRoutes("home")
-    data object Detail : NavigationRoutes("detail/{id}") {
-        fun createRoute(id: String) = "detail/$id"
-    }
-    // Add more routes as needed
-}
-```
-
-**AppNavigation.kt:**
-```kotlin
-package com.handysparksoft.kotlincoroutines.navigation
-
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
-
-@Composable
-fun AppNavigation(
-    navController: NavHostController = rememberNavController()
-) {
-    NavHost(
-        navController = navController,
-        startDestination = NavigationRoutes.Home.route
-    ) {
-        composable(NavigationRoutes.Home.route) {
-            // HomeScreen(navController = navController)
-            // Placeholder - implement your home screen
-        }
-
-        composable(
-            route = NavigationRoutes.Detail.route,
-            arguments = listOf(
-                navArgument("id") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")
-            // DetailScreen(id = id, navController = navController)
-            // Placeholder - implement your detail screen
-        }
-    }
-}
-```
-
-### 7. Create Basic Hilt Modules
+### 6. Create Basic Hilt Modules
 
 **Create di package structure:**
 ```
@@ -252,7 +178,7 @@ object AppModule {
 }
 ```
 
-### 8. Example ViewModel with Hilt
+### 7. Example ViewModel with Hilt
 
 **Example structure:**
 ```kotlin
@@ -295,43 +221,7 @@ sealed class HomeUiState {
 }
 ```
 
-### 9. Example Screen with ViewModel Injection
-
-**Example structure:**
-```kotlin
-package com.handysparksoft.kotlincoroutines.presentation.home
-
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-
-@Composable
-fun HomeScreen(
-    navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel()
-) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    HomeContent(
-        uiState = uiState,
-        onNavigateToDetail = { id ->
-            navController.navigate(NavigationRoutes.Detail.createRoute(id))
-        }
-    )
-}
-
-@Composable
-private fun HomeContent(
-    uiState: HomeUiState,
-    onNavigateToDetail: (String) -> Unit
-) {
-    // UI implementation
-}
-```
-
-### 10. Update AndroidManifest.xml
+### 8. Update AndroidManifest.xml
 
 Ensure the Application class is set:
 ```xml
@@ -340,28 +230,23 @@ Ensure the Application class is set:
     ...>
 ```
 
-### 11. Add Proguard Rules (if needed)
+### 9. Add Proguard Rules (if needed)
 
 Create/update `app/proguard-rules.pro`:
 ```proguard
 # Hilt
 -keepnames @dagger.hilt.android.lifecycle.HiltViewModel class * extends androidx.lifecycle.ViewModel
-
-# Navigation
--keepnames class androidx.navigation.fragment.NavHostFragment
 ```
 
 ## Expected Outcome
 
 After running this prompt, the project should have:
-- ✅ Navigation Compose 3 configured and ready to use
 - ✅ Hilt dependency injection fully integrated
 - ✅ Application class annotated with @HiltAndroidApp
 - ✅ MainActivity annotated with @AndroidEntryPoint
-- ✅ Basic navigation setup with routes
 - ✅ Example Hilt modules for coroutine dispatchers
 - ✅ Example ViewModel with Hilt injection
-- ✅ Navigation and Hilt working together with hiltViewModel()
+- ✅ KSP annotation processing configured
 
 ## Verification Commands
 
@@ -381,8 +266,7 @@ After running this prompt, the project should have:
 1. **Build succeeds** - Hilt annotation processors generate code
 2. **No compilation errors** - All Hilt annotations resolved
 3. **Application starts** - Hilt initializes without crashes
-4. **Navigation works** - Can navigate between screens
-5. **ViewModels injected** - hiltViewModel() provides instances
+4. **ViewModels injected** - Dependencies are properly injected
 
 ## Common Issues
 
@@ -397,10 +281,6 @@ Ensure KSP version matches Kotlin version:
 ### Hilt Cannot Find Generated Code
 - Ensure KSP plugin is applied before Hilt plugin
 - Check generated code in `build/generated/ksp/`
-
-### Navigation Not Working
-- Verify NavHost startDestination matches a route
-- Check route strings are consistent
 
 ## Architecture Integration
 
@@ -439,13 +319,11 @@ Already covered in example above with @HiltViewModel.
 2. **Qualifiers:** Use custom qualifiers for multiple bindings of same type
 3. **Module Organization:** Separate modules by feature or layer
 4. **Testing:** Use Hilt testing library for instrumented tests
-5. **Navigation:** Use type-safe navigation arguments when possible
+5. **Constructor Injection:** Prefer constructor injection over field injection
 
 ## Related Documentation
-- [Navigation Compose Documentation](../docs/navigation-compose.md) (will be created)
-- [Hilt Documentation](../docs/hilt.md) (will be created)
+- [Hilt Documentation](../docs/hilt.md)
 
 ## Additional Resources
-- [Navigation Compose Official Docs](https://developer.android.com/jetpack/compose/navigation)
 - [Hilt Official Docs](https://developer.android.com/training/dependency-injection/hilt-android)
-- [Navigation Compose 3 Release Notes](https://developer.android.com/jetpack/androidx/releases/navigation)
+- [Hilt Codelabs](https://developer.android.com/codelabs/android-hilt)

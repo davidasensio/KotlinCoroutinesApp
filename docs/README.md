@@ -4,8 +4,7 @@ This folder contains technical documentation for all development tools, CI/CD pr
 
 ## Development Tools
 
-### Architecture & Navigation
-- **[Navigation Compose 3](./navigation-compose.md)** - Type-safe navigation for Compose
+### Architecture
 - **[Hilt](./hilt.md)** - Dependency injection for Android
 
 ### Code Quality & Formatting
@@ -45,7 +44,6 @@ This folder contains technical documentation for all development tools, CI/CD pr
 
 | Tool | Configuration Location |
 |------|----------------------|
-| Navigation Compose | `navigation/` package |
 | Hilt | `di/` package, `app/build.gradle.kts` |
 | detekt | `config/detekt/detekt.yml` |
 | ktlint | `build.gradle.kts` (root) |

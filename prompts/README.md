@@ -24,18 +24,17 @@ Set up continuous integration and automated dependency management.
 - Unit and instrumented tests
 - Renovate bot configuration
 
-### [03 - Add Jetpack Navigation 3 and Hilt](./03-add-jetpack-navigation-hilt.md)
-Integrate Navigation Compose 3 and Hilt dependency injection.
+### [03 - Add Hilt Dependency Injection](./03-add-hilt.md)
+Integrate Hilt for dependency injection.
 
 **Includes:**
-- Navigation Compose 3 setup with type-safe routes
 - Hilt dependency injection configuration
 - KSP (Kotlin Symbol Processing) setup
-- Application and Activity annotations
-- Basic navigation structure and routes
+- Application and Activity annotations (@HiltAndroidApp, @AndroidEntryPoint)
 - Hilt modules for coroutine dispatchers
-- Example ViewModel with injection
-- Architecture integration examples
+- Example ViewModel with @HiltViewModel
+- Repository and use case injection examples
+- Clean Architecture integration patterns
 
 ## How to Use These Prompts
 
