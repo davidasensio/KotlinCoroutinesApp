@@ -1,8 +1,10 @@
 package com.handysparksoft.kotlincoroutines
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
+@HiltAndroidApp
 class CoroutinesApp : Application() {
     override fun onCreate() {
         super.onCreate()

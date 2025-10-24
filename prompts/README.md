@@ -24,6 +24,18 @@ Set up continuous integration and automated dependency management.
 - Unit and instrumented tests
 - Renovate bot configuration
 
+### [03 - Add Hilt Dependency Injection](./03-add-hilt.md)
+Integrate Hilt for dependency injection.
+
+**Includes:**
+- Hilt dependency injection configuration
+- KSP (Kotlin Symbol Processing) setup
+- Application and Activity annotations (@HiltAndroidApp, @AndroidEntryPoint)
+- Hilt modules for coroutine dispatchers
+- Example ViewModel with @HiltViewModel
+- Repository and use case injection examples
+- Clean Architecture integration patterns
+
 ## How to Use These Prompts
 
 1. **Copy the prompt content** from the desired `.md` file

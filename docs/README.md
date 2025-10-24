@@ -4,6 +4,9 @@ This folder contains technical documentation for all development tools, CI/CD pr
 
 ## Development Tools
 
+### Architecture
+- **[Hilt](./hilt.md)** - Dependency injection for Android
+
 ### Code Quality & Formatting
 - **[detekt](./detekt.md)** - Static code analysis for Kotlin
 - **[ktlint](./ktlint.md)** - Kotlin code formatter and linter
@@ -41,6 +44,7 @@ This folder contains technical documentation for all development tools, CI/CD pr
 
 | Tool | Configuration Location |
 |------|----------------------|
+| Hilt | `di/` package, `app/build.gradle.kts` |
 | detekt | `config/detekt/detekt.yml` |
 | ktlint | `build.gradle.kts` (root) |
 | Renovate | `renovate.json` |
