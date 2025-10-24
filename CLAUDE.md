@@ -110,6 +110,37 @@ Dependencies are managed in `gradle/libs.versions.toml`. Key dependencies:
 - Timber for logging
 - Compose Lint Checks for Compose-specific linting
 
+### Dependency Management - Renovate Bot
+The project uses Renovate bot for automated dependency updates:
+
+**Configuration:** `renovate.json` in repository root
+
+**Update Schedule:**
+- Weekly on Monday mornings (before 9 AM UTC)
+- Security vulnerabilities: Immediate (not scheduled)
+
+**Grouping Strategy:**
+- Jetpack Compose (BOM + all compose libraries)
+- AndroidX libraries
+- Kotlin ecosystem
+- Testing libraries
+- Build tools (AGP, Gradle plugins)
+- Code quality tools (ktlint, detekt)
+- Development tools (Timber, lint checks)
+- GitHub Actions
+
+**Auto-merge Policy:**
+- Patch updates (e.g., 1.2.3 → 1.2.4) auto-merge after:
+  - All CI checks pass
+  - 2 days of stability
+- Minor/major updates require manual review
+- Major updates require approval via Dependency Dashboard
+
+**Monitoring:**
+- Check the "Dependency Dashboard" GitHub issue for overview
+- PRs are labeled by dependency type (compose, androidx, kotlin, etc.)
+- Semantic commits: `chore(deps): update X to Y`
+
 ### Code Quality Configuration
 - **ktlint:** Configured in root `build.gradle.kts` (version 1.3.1, Android mode enabled)
 - **detekt:** Configuration at `config/detekt/detekt.yml` with baseline at `config/detekt/baseline.xml`
@@ -137,4 +168,5 @@ The project includes environment-aware development guidelines in `app/CLAUDE.md`
 - `build.gradle.kts` (root) - Build configuration with ktlint/detekt setup
 - `app/build.gradle.kts` - App module configuration
 - `gradle/libs.versions.toml` - Centralized dependency versions
+- `renovate.json` - Renovate bot configuration for automated dependency updates
 - `app/CLAUDE.md` - Additional Android development guidelines for AI agents
