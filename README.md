@@ -25,9 +25,11 @@ This project serves as a comprehensive showcase of Kotlin Coroutines patterns an
 ### Development Tools
 - **Code Quality:** ktlint, detekt, Compose Lint Checks
 - **Logging:** Timber
-- **Dependency Management:** Compose BOM
+- **Dependency Management:** Compose BOM, Renovate Bot
 - **Design:** Figma
 - **CI/CD:** GitHub Actions
+
+📚 **[Technical Documentation](./docs/)** - Detailed docs for all development tools and configurations
 
 ### Firebase
 - **Crashlytics:** Crash reporting and analytics
