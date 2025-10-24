@@ -24,6 +24,19 @@ Set up continuous integration and automated dependency management.
 - Unit and instrumented tests
 - Renovate bot configuration
 
+### [03 - Add Jetpack Navigation 3 and Hilt](./03-add-jetpack-navigation-hilt.md)
+Integrate Navigation Compose 3 and Hilt dependency injection.
+
+**Includes:**
+- Navigation Compose 3 setup with type-safe routes
+- Hilt dependency injection configuration
+- KSP (Kotlin Symbol Processing) setup
+- Application and Activity annotations
+- Basic navigation structure and routes
+- Hilt modules for coroutine dispatchers
+- Example ViewModel with injection
+- Architecture integration examples
+
 ## How to Use These Prompts
 
 1. **Copy the prompt content** from the desired `.md` file

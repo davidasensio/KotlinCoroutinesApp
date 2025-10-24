@@ -4,6 +4,10 @@ This folder contains technical documentation for all development tools, CI/CD pr
 
 ## Development Tools
 
+### Architecture & Navigation
+- **[Navigation Compose 3](./navigation-compose.md)** - Type-safe navigation for Compose
+- **[Hilt](./hilt.md)** - Dependency injection for Android
+
 ### Code Quality & Formatting
 - **[detekt](./detekt.md)** - Static code analysis for Kotlin
 - **[ktlint](./ktlint.md)** - Kotlin code formatter and linter
@@ -41,6 +45,8 @@ This folder contains technical documentation for all development tools, CI/CD pr
 
 | Tool | Configuration Location |
 |------|----------------------|
+| Navigation Compose | `navigation/` package |
+| Hilt | `di/` package, `app/build.gradle.kts` |
 | detekt | `config/detekt/detekt.yml` |
 | ktlint | `build.gradle.kts` (root) |
 | Renovate | `renovate.json` |
