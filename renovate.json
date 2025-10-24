@@ -1,0 +1,182 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":enablePreCommit"
+  ],
+  "schedule": [
+    "before 9am on Monday"
+  ],
+  "timezone": "UTC",
+  "labels": [
+    "dependencies"
+  ],
+  "ignoreDeps": [],
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ],
+    "schedule": []
+  },
+  "packageRules": [
+    {
+      "description": "Jetpack Compose - Group all Compose dependencies",
+      "groupName": "Jetpack Compose",
+      "matchPackagePatterns": [
+        "^androidx\\.compose",
+        "compose-bom"
+      ],
+      "labels": [
+        "compose"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    },
+    {
+      "description": "AndroidX - Group all AndroidX dependencies",
+      "groupName": "AndroidX",
+      "matchPackagePatterns": [
+        "^androidx\\."
+      ],
+      "excludePackagePatterns": [
+        "^androidx\\.compose"
+      ],
+      "labels": [
+        "androidx"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    },
+    {
+      "description": "Kotlin Ecosystem - Group Kotlin and kotlinx libraries",
+      "groupName": "Kotlin",
+      "matchPackagePatterns": [
+        "^org\\.jetbrains\\.kotlin",
+        "^org\\.jetbrains\\.kotlinx"
+      ],
+      "labels": [
+        "kotlin"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    },
+    {
+      "description": "Testing Libraries - Group all testing dependencies",
+      "groupName": "Testing",
+      "matchPackagePatterns": [
+        "junit",
+        "espresso",
+        "mockito",
+        "turbine",
+        "kotest",
+        "androidx\\.test"
+      ],
+      "labels": [
+        "testing"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    },
+    {
+      "description": "Build Tools - AGP and Gradle",
+      "groupName": "Build Tools",
+      "matchPackagePatterns": [
+        "com\\.android\\.tools\\.build",
+        "gradle"
+      ],
+      "labels": [
+        "build-tools"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    },
+    {
+      "description": "Code Quality Tools - ktlint, detekt, lint",
+      "groupName": "Code Quality",
+      "matchPackagePatterns": [
+        "ktlint",
+        "detekt",
+        "lint"
+      ],
+      "labels": [
+        "code-quality"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    },
+    {
+      "description": "Development Tools - Timber and other dev dependencies",
+      "groupName": "Development Tools",
+      "matchPackageNames": [
+        "com.jakewharton.timber:timber",
+        "com.slack.lint.compose:compose-lint-checks"
+      ],
+      "labels": [
+        "dev-tools"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    },
+    {
+      "description": "Auto-merge patch updates after CI passes",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash",
+      "ignoreTests": false,
+      "stabilityDays": 2
+    },
+    {
+      "description": "Require approval for major updates",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "GitHub Actions - Group all action updates",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions",
+      "labels": [
+        "github-actions"
+      ],
+      "automerge": false,
+      "schedule": [
+        "before 9am on Monday"
+      ]
+    }
+  ],
+  "gradle": {
+    "enabled": true
+  },
+  "prConcurrentLimit": 5,
+  "prCreation": "immediate",
+  "prHourlyLimit": 2,
+  "rebaseWhen": "conflicted",
+  "semanticCommits": "enabled",
+  "commitMessagePrefix": "chore(deps):",
+  "commitMessageAction": "update",
+  "commitMessageExtra": "to {{newVersion}}",
+  "platformAutomerge": false,
+  "statusCheckVerify": true
+}
