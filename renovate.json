@@ -134,17 +134,6 @@
       ]
     },
     {
-      "description": "Auto-merge patch updates after CI passes",
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "automerge": true,
-      "automergeType": "pr",
-      "automergeStrategy": "squash",
-      "ignoreTests": false,
-      "stabilityDays": 2
-    },
-    {
       "description": "Require approval for major updates",
       "matchUpdateTypes": [
         "major"
